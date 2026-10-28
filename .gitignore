@@ -1,0 +1,12 @@
+.env.*
+!.env.devnet
+deployments/devnet.env
+contracts/*/.sncast/
+
+# build
+target/
+.snfoundry_cache/
+snfoundry_trace/
+coverage/
+profile/
+node_modules/
