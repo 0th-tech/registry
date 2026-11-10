@@ -1,5 +1,5 @@
 [sncast.devnet]
-url = "http://localhost:5050"
+url = "$RPC_URL"
 account = "devnet-1"
 
 [sncast.sepolia]
