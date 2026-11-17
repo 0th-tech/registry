@@ -1,9 +1,11 @@
-.PHONY: deploy sync up down logs test typecheck clean fmt fmt-check
+.PHONY: deploy sync up down logs circuit test typecheck clean fmt fmt-check
 
 NETWORK ?= devnet
 
 CONTRACT = contracts/starknet
 SYNC_IMAGE ?= ghcr.io/0th-tech/registry-sync:v0.1.0
+CIRCUIT_VERSION ?= v0.1.1
+CIRCUIT_RELEASE = https://github.com/0th-tech/circuit/releases/download/$(CIRCUIT_VERSION)
 
 -include .env.$(NETWORK)
 -include deployments/$(NETWORK).env
@@ -32,14 +34,21 @@ logs:
 sync:
 	cd sync && pnpm run sync
 
+# sync/target/circuit/fixture.json, from the circuit's release
+circuit:
+	mkdir -p sync/target/circuit
+	curl -fsSL $(CIRCUIT_RELEASE)/fixture.json -o sync/target/circuit/fixture.json
+
+# Needs make circuit once
 test:
 	cd $(CONTRACT) && snforge test
+	cd sync && pnpm test
 
 typecheck:
 	cd sync && pnpm run typecheck
 
 clean:
-	rm -rf $(CONTRACT)/target
+	rm -rf $(CONTRACT)/target sync/target
 	rm -f deployments/devnet.env
 
 fmt:

@@ -16,7 +16,7 @@ const jwk = z.object({
   e: z.string().optional(),
 });
 
-function keyLimbs(key: z.infer<typeof jwk>) {
+export function keyLimbs(key: z.infer<typeof jwk>) {
   if (key.kty !== "RSA" || !key.n) throw new Error("not an RSA public key");
   // The circuit only checks seals made with exponent 65537
   if (key.e !== "AQAB") throw new Error(`exponent is not 65537: e ${key.e}`);
@@ -44,7 +44,7 @@ async function googleKeys() {
 }
 
 // A u256 is sent as two felts, low then high, and a 120-bit limb fits in the low one
-const keyCalldata = (limbs: string[]) => [
+export const keyCalldata = (limbs: string[]) => [
   String(limbs.length),
   ...limbs.flatMap((limb) => [limb, "0"]),
 ];
