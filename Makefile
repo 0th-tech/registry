@@ -1,4 +1,4 @@
-.PHONY: deploy sync up down logs circuit test typecheck clean fmt fmt-check
+.PHONY: deploy sync up down logs circuit build test typecheck clean fmt fmt-check
 
 NETWORK ?= devnet
 
@@ -38,6 +38,9 @@ sync:
 circuit:
 	mkdir -p sync/target/circuit
 	curl -fsSL $(CIRCUIT_RELEASE)/fixture.json -o sync/target/circuit/fixture.json
+
+build:
+	cd $(CONTRACT) && scarb --release build
 
 # Needs make circuit once
 test:
