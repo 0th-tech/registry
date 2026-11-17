@@ -27,7 +27,6 @@ jobs:
           cache-dependency-path: sync/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
         working-directory: sync
-      - run: make circuit
       - run: make test
       - run: make typecheck
       - run: make fmt-check

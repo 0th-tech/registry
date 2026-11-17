@@ -1,6 +1,9 @@
-.PHONY: deploy sync up down logs circuit build test typecheck clean fmt fmt-check
+.PHONY: deploy sync up down logs build test typecheck clean fmt fmt-check
 
 NETWORK ?= devnet
+
+# A download that fails leaves no partial file behind
+.DELETE_ON_ERROR:
 
 CONTRACT = contracts/starknet
 SYNC_IMAGE ?= ghcr.io/0th-tech/registry-sync:v0.1.0
@@ -34,16 +37,15 @@ logs:
 sync:
 	cd sync && pnpm run sync
 
-# sync/target/circuit/fixture.json, from the circuit's release
-circuit:
-	mkdir -p sync/target/circuit
-	curl -fsSL $(CIRCUIT_RELEASE)/fixture.json -o sync/target/circuit/fixture.json
+# A file from the circuit's release, downloaded again whenever this Makefile changes, since it pins the version
+sync/target/circuit/%: Makefile
+	mkdir -p $(@D)
+	curl -fsSL $(CIRCUIT_RELEASE)/$* -o $@
 
 build:
 	cd $(CONTRACT) && scarb --release build
 
-# Needs make circuit once
-test:
+test: sync/target/circuit/fixture.json
 	cd $(CONTRACT) && snforge test
 	cd sync && pnpm test
 
